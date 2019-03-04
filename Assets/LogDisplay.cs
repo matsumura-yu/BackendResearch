@@ -1,20 +1,18 @@
 ﻿using System.Collections;
-using System.Collections.Generic; // Queueのために必要
+using System.Collections.Generic;
 using UnityEngine;
-using System.Text; // StringBuilderのために必要
-
+using System.Text;
+using UnityEngine.UI;
 public class LogDisplay : MonoBehaviour
 {
-    // ログを何個まで保持するか
+    private Text logText;
+    // ログの最大個数
     [SerializeField] int m_MaxLogCount = 20;
-
-    // 表示領域
-    [SerializeField] Rect m_Area = new Rect(220, 0, 400, 400);
 
     // ログの文字列を入れておくためのQueue
     Queue<string> m_LogMessages = new Queue<string>();
 
-    // ログの文字列を結合するのに使う
+    // 文字列の結合
     StringBuilder m_StringBuilder = new StringBuilder();
  
     void Awake()
@@ -22,6 +20,7 @@ public class LogDisplay : MonoBehaviour
         // Application.logMessageReceivedに関数を登録しておくと、
         // ログが出力される際に呼んでくれる
         Application.logMessageReceived += LogReceived;
+        logText = GetComponent<Text>();
     }
 
     // ログが出力される際に呼んでもらう関数
@@ -36,19 +35,13 @@ public class LogDisplay : MonoBehaviour
             m_LogMessages.Dequeue();
         }
     }
-
-    void OnGUI()
+    void Update()
     {
-        // StringBuilderの内容をリセット
         m_StringBuilder.Length = 0;
-
-        // ログの文字列を結合する（1個ごとに末尾に改行を追加）
-        foreach (string s in m_LogMessages)
+        foreach(string s in m_LogMessages)
         {
             m_StringBuilder.Append(s).Append(System.Environment.NewLine);
         }
-
-        // 画面に表示
-        GUI.Label(m_Area, m_StringBuilder.ToString());
+        logText.text = m_StringBuilder.ToString();
     }
 }
