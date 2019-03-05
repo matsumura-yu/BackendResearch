@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using UnityEngine.Networking;
 
-public class AuthenticationTest : MonoBehaviour {
+public class FirebaseTest : MonoBehaviour {
 
 	public string filePath = "Key";
 
@@ -22,7 +22,7 @@ public class AuthenticationTest : MonoBehaviour {
 
 		if(key != null){
 			Debug.Log(key.apiKey);
-			StartCoroutine(SignIn());
+			StartCoroutine(CreateDocument());
 		}
 	}
 
@@ -30,6 +30,7 @@ public class AuthenticationTest : MonoBehaviour {
 	internal class APIKey
 	{
 		public string apiKey;
+		public string projectId;
 	}
 	
 	IEnumerator SignIn() {
@@ -52,6 +53,36 @@ public class AuthenticationTest : MonoBehaviour {
             Debug.Log(www.downloadHandler.text);
         }
     }
+
+	IEnumerator CreateDocument(){
+		var url = "https://firestore.googleapis.com/v1/projects/" + key.projectId + "/databases/(default)/documents/unity?key=" + key.apiKey;
+		// string json = "{'name':'unity'}";
+
+		UnityWebRequest request = new UnityWebRequest(url, "POST");
+
+		// json(string)をbyte[]に変換
+		// byte[] bodyRaw = Encoding.UTF8.GetBytes(json);
+
+		// jsonを設定
+		// request.uploadHandler   = (UploadHandler) new UploadHandlerRaw(bodyRaw);
+		request.downloadHandler = (DownloadHandler) new DownloadHandlerBuffer();
+
+		//ヘッダーにタイプを設定
+		//request.SetRequestHeader("Content-Type", "application/json");
+
+		yield return request.SendWebRequest();
+
+		if(request.isNetworkError || request.isHttpError){
+			Debug.Log("失敗");
+			Debug.Log(request.responseCode);
+			Debug.Log(request.error);
+		}else{
+			Debug.Log("成功");
+            Debug.Log(request.responseCode);
+            Debug.Log(request.downloadHandler.text);
+		}
+	}
+
 
 	// Update is called once per frame
 	void Update () {
