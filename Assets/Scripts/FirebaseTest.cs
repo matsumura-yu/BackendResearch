@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.Networking;
+using System.Text;
 
 public class FirebaseTest : MonoBehaviour {
 
@@ -55,16 +56,16 @@ public class FirebaseTest : MonoBehaviour {
     }
 
 	IEnumerator CreateDocument(){
-		var url = "https://firestore.googleapis.com/v1/projects/" + key.projectId + "/databases/(default)/documents/unity?key=" + key.apiKey;
-		// string json = "{'name':'unity'}";
-
+		var url = "https://firestore.googleapis.com/v1/projects/" + key.projectId + "/databases/(default)/documents/collectionName?key=" + key.apiKey;
+		string json = "{'fields': {'firstName': {'stringValue': 'testFirstName'}, 'lastName': {'stringValue':'testLastName'}}}";
+		
 		UnityWebRequest request = new UnityWebRequest(url, "POST");
 
 		// json(string)をbyte[]に変換
-		// byte[] bodyRaw = Encoding.UTF8.GetBytes(json);
+		byte[] bodyRaw = Encoding.UTF8.GetBytes(json);
 
 		// jsonを設定
-		// request.uploadHandler   = (UploadHandler) new UploadHandlerRaw(bodyRaw);
+		request.uploadHandler   = (UploadHandler) new UploadHandlerRaw(bodyRaw);
 		request.downloadHandler = (DownloadHandler) new DownloadHandlerBuffer();
 
 		//ヘッダーにタイプを設定
