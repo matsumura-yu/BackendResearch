@@ -23,7 +23,7 @@ public class FirebaseTest : MonoBehaviour {
 
 		if(key != null){
 			Debug.Log(key.apiKey);
-			StartCoroutine(CreateDocument());
+			StartCoroutine(GetDocument());
 		}
 	}
 
@@ -82,6 +82,29 @@ public class FirebaseTest : MonoBehaviour {
             Debug.Log(request.responseCode);
             Debug.Log(request.downloadHandler.text);
 		}
+	}
+
+	IEnumerator GetDocument(){
+		string documentPath = "collectionName/test";
+		var url = "https://firestore.googleapis.com/v1/projects/" + key.projectId + "/databases/(default)/documents/"+ documentPath + "?key="+ key.apiKey;
+		
+		UnityWebRequest request = new UnityWebRequest(url, "GET");
+
+		// jsonを設定
+		request.downloadHandler = (DownloadHandler) new DownloadHandlerBuffer();
+
+		yield return request.SendWebRequest();
+
+		if(request.isNetworkError || request.isHttpError){
+			Debug.Log("失敗");
+			Debug.Log(request.responseCode);
+			Debug.Log(request.error);
+		}else{
+			Debug.Log("成功");
+            Debug.Log(request.responseCode);
+            Debug.Log(request.downloadHandler.text);
+		}
+
 	}
 
 
